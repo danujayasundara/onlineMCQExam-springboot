@@ -49,7 +49,7 @@
                       </tr>
                       <tr th:each="review : ${questionReviews}">
 				        <td th:text="${review.question.question_content}"></td>
-				        <td th:text="${review.isAnswerCorrect ? 'Correct' : 'Incorrect'}"></td>
+				        <td th:text="${review.isAnswerCorrect ? 'Correct' : 'Wrong'}"></td>
 				    </tr>
                   </table>
                 </div>

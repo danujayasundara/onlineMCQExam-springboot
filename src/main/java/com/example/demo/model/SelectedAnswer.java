@@ -14,7 +14,7 @@ public class SelectedAnswer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long selectAns_id;
-	private int selected_answer;
+	private Long selected_answer;
 	
 	@ManyToOne
 	@JoinColumn(name = "answer_id")
@@ -32,7 +32,7 @@ public class SelectedAnswer {
 		super();
 	}
 
-	public SelectedAnswer(int selected_answer, Answer answer_id, Question question_id, ExamAttempt attempt_id) {
+	public SelectedAnswer(Long selected_answer, Answer answer_id, Question question_id, ExamAttempt attempt_id) {
 		super();
 		this.selected_answer = selected_answer;
 		this.answer_id = answer_id;
@@ -48,11 +48,11 @@ public class SelectedAnswer {
 		this.selectAns_id = selectAns_id;
 	}
 
-	public int getSelected_answer() {
+	public Long getSelected_answer() {
 		return selected_answer;
 	}
 
-	public void setSelected_answer(int selected_answer) {
+	public void setSelected_answer(Long selected_answer) {
 		this.selected_answer = selected_answer;
 	}
 

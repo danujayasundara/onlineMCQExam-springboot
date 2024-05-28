@@ -299,8 +299,8 @@
 				// alert('Button click');
 				//isPublished = !isPublished;
 				let currentTime = Date.now();
-	        	console.log('Current Time:', currentTime);
-	        	localStorage.setItem('currentTime', currentTime.toString());
+		        console.log('Current Time:', currentTime);
+		        localStorage.setItem('currentTime_' + examId2, currentTime.toString());
 				$.ajax({
 			        type: 'PUT',
 			        url: '/exams/' + examId2 + '/status',
@@ -417,16 +417,15 @@
 		            contentType: 'application/json',
 		            data: JSON.stringify(examData),
 		            success: function (response) {
-		                console.log(response);
 		                localStorage.removeItem("questionId");
 		                const newExamId = response.examId;
 		                localStorage.setItem('examIdRes', newExamId);
-		                getExamDetails(newExamId);
+		                updateTableWithQuestion(response);
 		                RefreshTableToGetQues(newExamId);
+		                getExamDetails(newExamId);
 		                eId = newExamId; 
 		                console.log('ExamId for replace from save function', eId);
 		
-		                updateTableWithQuestion(response);
 		            },
 		            error: function (xhr, status, error) {
 		                console.error(xhr.responseText);
@@ -461,7 +460,7 @@
 	        type: 'GET',
 	        dataType: 'json',
 	        success: function(response) {
-	            console.log('Exam Details:', response);
+	            console.log('Exam Details**:', response);
 	            $('#examDateTime').val(response.dateTime);
 	            $('#inputExam').val(response.examName);
 	            $('#examId').val(response.examId);
@@ -571,7 +570,7 @@
 	function RefreshTableToGetQues(examId) {
 	    console.log('Refreshing table for examId:', examId);
 	    $("#questable tbody").load(location.href + " #questable tbody > *", function() {
-	        console.log('Table refreshed.');
+	        console.log('Table refreshed**).');
 	        
 	        $('.questionLink').click(function(e) {
 	            e.preventDefault(); 
@@ -585,14 +584,14 @@
 	// fetch the duration
 	$.ajax({
 	    type: 'GET',
-	    url: '/ongoingExam/{examId}', 
+	    url: '/getduration/' + examId2,
 	    success: function(response) {
 	        console.log('Response from server:', response); 
 	
 	        let duration = response.duration;
 	        console.log('Duration fetched from response:', duration); 
 	
-	        localStorage.setItem('duration', duration);
+	        localStorage.setItem('duration_' + examId2, duration);
 	        console.log('Duration stored in localStorage:', duration);
 	    },
 	    error: function(xhr, status, error) {

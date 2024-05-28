@@ -92,13 +92,12 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-	
 	document.addEventListener('DOMContentLoaded', function() {
-	    let storedTime = localStorage.getItem('currentTime');
+	    let examId = getExamIdFromURL(); 
+	    let storedTime = localStorage.getItem('currentTime_' + examId);
 	
 	    if (storedTime && !isNaN(parseInt(storedTime))) {
 	        let timestamp = parseInt(storedTime);
-	
 	        let currentDate = new Date(timestamp);
 	
 	        let hours = currentDate.getHours();
@@ -106,7 +105,6 @@
 	        let seconds = currentDate.getSeconds();
 	
 	        let formattedTime = `${hours}:${minutes}:${seconds}`;
-	
 	        console.log('Formatted Time:', formattedTime);
 	        document.getElementById('startTime').textContent = formattedTime;
 	    } else {
@@ -115,26 +113,28 @@
 	});
 	
 	document.addEventListener('DOMContentLoaded', function() {
-	    let durationElement = document.getElementById('duration');
-	    let duration = durationElement.textContent.trim();
+	    let examId = getExamIdFromURL();  
+	    let duration = localStorage.getItem('duration_' + examId);
+	    console.log('Duration is',duration);
 	
-	    localStorage.setItem('duration', duration);
-	    console.log('Duration stored in localStorage:', duration);
-	   
-	    let storedTime = localStorage.getItem('currentTime');
-	    if (storedTime && !isNaN(parseInt(storedTime))) {
-	        let startTime = new Date(parseInt(storedTime));
-	        let endTime = new Date(startTime.getTime() + duration * 60000);
+	    if (duration) {
+	        let storedTime = localStorage.getItem('currentTime_' + examId);
+	        if (storedTime && !isNaN(parseInt(storedTime))) {
+	            let startTime = new Date(parseInt(storedTime));
+	            let endTime = new Date(startTime.getTime() + duration * 60000);
 	
-	        console.log('End Time stored in localStorage:', endTime);
-	        localStorage.setItem('endTime', endTime);
+	            console.log('End Time stored in localStorage:', endTime);
+	            localStorage.setItem('endTime_' + examId, endTime);
 	
-	        let formattedEndTime = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
-	        console.log('Formatted End Time:', formattedEndTime);
+	            let formattedEndTime = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
+	            console.log('Formatted End Time:', formattedEndTime);
 	
-	        document.getElementById('endTime').textContent = formattedEndTime;
+	            document.getElementById('endTime').textContent = formattedEndTime;
+	        } else {
+	            console.error('Invalid or missing stored start time.');
+	        }
 	    } else {
-	        console.error('Invalid or missing stored start time.');
+	        console.error('Invalid or missing stored duration.');
 	    }
 	});
 	

@@ -147,99 +147,74 @@ public class QuestionServiceImpl implements QuestionService{
 	
 	//save selected answers and calculate result
 	public void processSelectedAnswers(@RequestBody List<SelectedAnswerDTO> selectedAnswers, HttpSession session) {
-		  for (SelectedAnswerDTO selectedAnswer : selectedAnswers) {
-			  SelectedAnswer saveSelectAns = new SelectedAnswer();
-			  System.out.println("************"+saveSelectAns);
-			  System.out.println("****selected ans********"+selectedAnswer.getSelected_answer());
-			  System.out.println("****QuestionId********"+selectedAnswer.getQuestion_id());
-			  System.out.println("****ExamId********"+selectedAnswer.getExamId());
-			  System.out.println("****UserId********"+selectedAnswer.getUserId());
-			  saveSelectAns.setSelected_answer(selectedAnswer.getSelected_answer());
-			  Question questionId = selectedAnswer.getQuestion_id();
-			  saveSelectAns.setQuestion_id(questionId);
-			  long questionId2 = selectedAnswer.getQuestion_id().getQuestion_id();
-			  Answer correctAnsId = answerRepository.findCorrectAnswer(questionId2);
-			  saveSelectAns.setAnswer_id(correctAnsId);
-			  
-			  //get attempt id
-			  ExamAttempt examAttempt = examAttemptRepository.findByUserAndExam(selectedAnswer.getUserId(), selectedAnswer.getExamId());
-			  System.out.println("****AttemptId********"+examAttempt);	
-			  if (examAttempt != null) {
-				    saveSelectAns.setAttempt_id(examAttempt);
-				    
-				    selectedAnswerRepository.save(saveSelectAns);
-				    System.out.println("Selected Answer ID: " + selectedAnswer.getSelected_answer());
-				    System.out.println("Question ID: " + selectedAnswer.getQuestion_id());
-			  	} else {
-				    System.out.println("ExamAttempt not found for userId: " + selectedAnswer.getUserId() + " and examId: " + selectedAnswer.getExamId());
-				            
-				}
-			  
-			  //calculate results
-			  List<Question> questions = questionRepository.findByExam(selectedAnswer.getExamId());
-			  int quesCount = questions.size();
-			  List<SelectedAnswer> answers = selectedAnswerRepository.getSelectAnsByAttId(examAttempt.getAttempt_id());
-			  System.out.println("*******COUNT*****"+quesCount);
-			  System.out.println("*******ANSWERS*****"+answers);
-			  int ansCount = 0;
-			  for(SelectedAnswer selectAns: answers) {
-				 if(selectAns.getSelected_answer() == selectAns.getAnswer_id().getAnswer_id()) {
-					 ansCount++;
-				 }
-			  }
-			  System.out.println("*******ANS COUNT*****"+ansCount);
-			  System.out.println("*******QUES COUNT*****"+quesCount);
-			  double result = ((double) ansCount / quesCount) * 100; 
-			  System.out.println("*******RESULT*****"+result);
-			  session.setAttribute("result", result);
-			  
-			  String pOrF = "";
-			  if(result >=40) {
-				  pOrF = "Pass";
-			  }else {
-				  pOrF = "Fail";
-			  }
-			  session.setAttribute("passFail", pOrF);
-			  
-			  String grade = "";
-			  if(result >=80) {
-				  grade = "A+";
-			  }else if(result >=70 && result <= 79){
-				  grade = "A";
-			  }else if(result >=60 && result <= 69){
-				  grade = "B";
-			  }else if(result >=50 && result <= 59){
-				  grade = "C";
-			  }else if(result >=40 && result <= 49){
-				  grade = "C-";
-			  }else {
-				  grade = "F";
-			  }
-			  
-			  session.setAttribute("grade", grade);
-			  
-			//display review to student (correct or wrong)
-			  List<QuestionReviewDTO> questionReviews = new ArrayList<>();
-			  for (Question question : questions) {
-			        boolean isAnswerCorrect = false; 
+	    for (SelectedAnswerDTO selectedAnswer : selectedAnswers) {
+	        SelectedAnswer saveSelectAns = new SelectedAnswer();
+	        saveSelectAns.setSelected_answer(selectedAnswer.getSelected_answer());
+	        Question questionId = selectedAnswer.getQuestion_id();
+	        saveSelectAns.setQuestion_id(questionId);
+	        long questionId2 = selectedAnswer.getQuestion_id().getQuestion_id();
+	        Answer correctAnsId = answerRepository.findCorrectAnswer(questionId2);
+	        saveSelectAns.setAnswer_id(correctAnsId);
 
-			        Answer correctAnswer = answerRepository.findCorrectAnswer(question.getQuestion_id());
-			        for (SelectedAnswer selectAnsR: answers) {
-			            if (selectAnsR.getQuestion_id().getQuestion_id() == question.getQuestion_id()) {
-			                if (selectAnsR.getSelected_answer() == correctAnswer.getAnswer_id()) {
-			                    isAnswerCorrect = true; 
-			                    break; 
-			                }
-			            }
-			        }
-			        QuestionReviewDTO questionReviewDTO = new QuestionReviewDTO(question, isAnswerCorrect);
-			        questionReviews.add(questionReviewDTO);
-			        session.setAttribute("questionReviews", questionReviews);
-			    }
-		  }
-		  
-		  //return "sturesult";
-	  }
+	        ExamAttempt examAttempt = examAttemptRepository.findByUserAndExam(selectedAnswer.getUserId(), selectedAnswer.getExamId());
+	        if (examAttempt != null) {
+	            saveSelectAns.setAttempt_id(examAttempt);
+	            selectedAnswerRepository.save(saveSelectAns);
+	        } else {
+	            System.out.println("ExamAttempt not found for userId: " + selectedAnswer.getUserId() + " and examId: " + selectedAnswer.getExamId());
+	        }
+
+	        // Calculate results
+	        List<Question> questions = questionRepository.findByExam(selectedAnswer.getExamId());
+	        int quesCount = questions.size();
+	        List<SelectedAnswer> answers = selectedAnswerRepository.getSelectAnsByAttId(examAttempt.getAttempt_id());
+	        int ansCount = 0;
+	        for (SelectedAnswer selectAns : answers) {
+	            if (selectAns.getSelected_answer().equals(selectAns.getAnswer_id().getAnswer_id())) {
+	                ansCount++;
+	            }
+	        }
+	        double result = ((double) ansCount / quesCount) * 100;
+	        session.setAttribute("result", result);
+
+	        String pOrF = result >= 40 ? "Pass" : "Fail";
+	        session.setAttribute("passFail", pOrF);
+
+	        String grade = "";
+	        if (result >= 80) {
+	            grade = "A+";
+	        } else if (result >= 70) {
+	            grade = "A";
+	        } else if (result >= 60) {
+	            grade = "B";
+	        } else if (result >= 50) {
+	            grade = "C";
+	        } else if (result >= 40) {
+	            grade = "C-";
+	        } else {
+	            grade = "F";
+	        }
+	        session.setAttribute("grade", grade);
+
+	        // Display review to student (correct or wrong)
+	        List<QuestionReviewDTO> questionReviews = new ArrayList<>();
+	        for (Question question : questions) {
+	            boolean isAnswerCorrect = false;
+	            Answer correctAnswer = answerRepository.findCorrectAnswer(question.getQuestion_id());
+	            for (SelectedAnswer selectAnsR : answers) {
+	                if (selectAnsR.getQuestion_id().getQuestion_id().equals(question.getQuestion_id())) {
+	                    if (selectAnsR.getSelected_answer().equals(correctAnswer.getAnswer_id())) {
+	                        isAnswerCorrect = true;
+	                        break;
+	                    }
+	                }
+	            }
+	            QuestionReviewDTO questionReviewDTO = new QuestionReviewDTO(question, isAnswerCorrect);
+	            questionReviews.add(questionReviewDTO);
+	        }
+	        session.setAttribute("questionReviews", questionReviews);
+	    }
+	}
 
 	public QuesDtoRes getQuestionAndAnswersById(Long questionId) throws NotFoundException {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);

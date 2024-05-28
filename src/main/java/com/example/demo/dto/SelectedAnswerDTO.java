@@ -8,15 +8,15 @@ import com.example.demo.model.User;
 
 public class SelectedAnswerDTO {
 	
-	private int selected_answer;
+	private Long selected_answer;
 	private Question question_id;
 	private Exam examId;
 	private User userId;
 	
-	public int getSelected_answer() {
+	public Long getSelected_answer() {
 		return selected_answer;
 	}
-	public void setSelected_answer(int selected_answer) {
+	public void setSelected_answer(Long selected_answer) {
 		this.selected_answer = selected_answer;
 	}
 	public Question getQuestion_id() {
