@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam</title>
+    <link rel="stylesheet" th:href="@{../css/styles.css}">
+</head>
+<body>
+    <header>
+        <div class="mainheader">
+            <img src="image/logo.png" alt="Logo">
+            <h1>Edueye</h1>
+        </div>
+    </header>
+
+    <div class="teachermain">
+        <div class="tdashboard">
+            <ul>
+                <li><a th:href="@{/admin-page}">Home</a></li>
+                <li><a th:href="@{/exams}">Exam</a></li>
+                <!--<li><a href="attendance.html">Attendance</a></li>
+                <li><a href="overallresult.html">Overall Result</a></li>-->
+                <li><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="examcontent">
+            <div class="up">
+                <div id="eleft">
+                    <div class="searchbar">
+                        <form id="searchForm">
+						    <th><input type="text" id="searchInput" name="examName"></th>
+						    <th id="search"><button id="searchButton" type="submit">Search</button></th>
+						</form>
+                    </div>
+                </div>
+                <div id="eright">
+                    <!--<form action="singleexam.html" method="post">-->
+                    <!--<form th:action="@{/add}" method="post">
+  						<button class="addbutton">New Exam</button>
+					</form>-->
+					<button onclick="goToNewExamPage()">New Exam</button>
+  
+                </div>
+            </div>
+            
+            <div class="down">
+                <div id="tablecontainer">
+                    <table id="examtable">
+                        <thead>
+                             <tr>
+                                <th>Exam</th>
+                                <th>Last Updated</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="exam : ${exams}" class="searchable">
+				                <!--<td th:text="${exam.exam_name}"></td>
+				                <td th:text="${exam.dateTime}"></td>
+				                <td th:text="${exam.e_status} ? 'Active' : 'Pending'"></td>-->
+				                <!--<button id="addItemBtn">Add Item to localStorage</button>-->
+				               <td><a id="addItemBtn" th:href="@{/newExam(examId=${exam.exam_id})}" th:onclick="'passExamDetails(' + ${exam.exam_id} + ')'">[[${exam.exam_name}]]</a></td>
+                				<td th:text="${exam.lastUpdate}"></td>
+                				<td th:text="${exam.e_status} ? 'Published' : 'Draft'"></td>
+			            </tr>
+                        </tbody>
+                    </table>
+                </div>   
+            </div>
+            
+            
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script th:inline="javascript">
+		
+		//goto new exam page
+				function goToNewExamPage() {
+				    window.location.href = "/addnewExam";
+				}
+				
+				//save exam details in local storage
+			    /*<![CDATA[*/
+			    const exams = /*[[${exams}]]*/ [];
+			    localStorage.setItem('exams', JSON.stringify(exams));
+			    /*]]>*/
+			    
+			    // Retrieve data from localStorage
+				const storedExams = localStorage.getItem('exams');
+				
+				// Check if data exists in localStorage
+				if (storedExams) {
+				    // Parse the JSON data
+				    const exams = JSON.parse(storedExams);
+				
+				    // Log the data to the console
+				    console.log('Exams stored in localStorage:', exams);
+				} else {
+				    console.log('No exams data found in localStorage.');
+				}
+				
+					function passExamDetails(examId) {
+				    // Retrieve exam details from localStorage
+				    const storedExams = localStorage.getItem('exams');
+				
+				    if (storedExams) {
+				        const exams = JSON.parse(storedExams);
+				
+				        // Find the exam with the matching ID
+				        const selectedExam = exams.find(exam => exam.exam_id === examId);
+				
+				        if (selectedExam) {
+				            // Store selected exam details with a specific key
+				            localStorage.setItem('selectedExam', JSON.stringify(selectedExam));
+				            localStorage.setItem('selectedExamId', selectedExam.exam_id);
+				        } else {
+				            console.error('Exam not found in localStorage.');
+				        }
+				    } else {
+				        console.error('No exams data found in localStorage.');
+				    }
+				}
+				
+				
+				//question
+				/*<![CDATA[*/
+			    const q = /*[[${questions}]]*/ [];
+			    localStorage.setItem('questions', JSON.stringify(q));
+			    /*]]>*/
+			    
+			    // Retrieve data from localStorage
+				const storedQ = localStorage.getItem('questions');
+				
+				// Check if data exists in localStorage
+				if (storedQ) {
+				    // Parse the JSON data
+				    const qu = JSON.parse(storedQ);
+				
+				    // Log the data to the console
+				    console.log('Q stored in localStorage:', qu);
+				} else {
+				    console.log('No q data found in localStorage.');
+				}
+				
+				 // develop search bar
+			     $(document).ready(function() {
+			        $('#searchForm').submit(function(e) {
+			            e.preventDefault();
+			
+			            var searchText = $('#searchInput').val().toLowerCase().trim(); 
+			            var matchingExams = $('.searchable').filter(function() {
+			                var examName = $(this).find('td:first-child').text().toLowerCase(); 
+			                return examName.includes(searchText);
+			            });
+			
+			            // Highlight matching exams and show message
+			            if (matchingExams.length > 0) {
+			                matchingExams.addClass('highlight');
+			            } else {
+			                alert('No matching exam found.');
+			                $('.searchable').removeClass('highlight');
+			            }
+			        });
+			    });
+	
+		</script>
+
+    <footer>
+        <div class="mainfooter">
+            &copy; 2024 EduEye. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

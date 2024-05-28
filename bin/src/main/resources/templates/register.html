@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Register</title>
+        <link rel="stylesheet" th:href="@{../css/styles.css}">
+    </head>
+    <body>
+        <header>
+            <div class="mainheader">
+                <img src="image/logo.png" alt="Logo">
+                <h1>Edueye</h1>
+            </div>
+        </header>
+        <div class="main">
+            <div class="register-cont">
+            <div class="message" th:if="${message != null}">
+           		[[${message}]]
+        	</div>
+                <h2>Register</h2>
+                <form id="register-form" th:action="@{/registration}"
+         			method="post"
+         			role="form"
+         			th:object="${user}">
+                  <label for="name">Name</label>
+                  <input th:field="*{fullname}" type="text" id="name" placeholder="Enter your fullname" required>
+                  <label for="email">Email Address</label>
+                  <input th:field="*{email}" type="email" id="email" placeholder="Enter your email" required>
+                  <label for="password">Password</label>
+                  <input th:field="*{password}" type="password" id="password" placeholder="Enter your password" required>
+                  <!--<label for="user-type">User Type</label>
+                  <select id="user-type" required>
+                    <option value="">Select User Type</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                  </select>-->
+                  <button type="submit">Register</button>
+                </form>
+                <!--<div id="errormsg"></div>-->
+              </div>
+        </div>
+        <footer>
+            <div class="mainfooter">
+                &copy; 2024 EduEye. All rights reserved.
+            </div>
+        </footer>
+        <script src="script.js"></script>
+    </body>
+</html>

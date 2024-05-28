@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher-Dashboard</title>
+    <link rel="stylesheet" th:href="@{../css/styles.css}">
+</head>
+<body>
+    <header>
+        <div class="mainheader">
+            <img src="image/logo.png" alt="Logo">
+            <h1>Edueye</h1>
+        </div>
+    </header>
+    <div class="teachermain">
+        <div class="tdashboard">
+            <ul>
+                <li><a th:href="@{/admin-page}">Home</a></li>
+                <li><a th:href="@{/exams}">Exam</a></li>
+                <!--<li><a href="attendance.html">Attendance</a></li>
+                <li><a href="overallresult.html">Overall Result</a></li>-->
+                <li><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="tRight">
+            <div class="welcome">
+                <h3>Welcome!, [[${user.getFullname()}]]</h3>
+                <span sec:authorize="isAuthenticated">
+        			<a th:href="@{/logout}">Logout</a>
+        		</span>
+                <p>This is your teacher dashboard where you can manage exams, attendance, and view overall results.</p>
+            </div>
+            <div class="tintroduction">
+                <p>Empower your students and save time with our easy-to-use online MCQ exam platform. <br>You can create, deliver, and analyze - all in one place!</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="mainfooter">
+            &copy; 2024 EduEye. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

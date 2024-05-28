@@ -1,0 +1,268 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: white;
+    height: 100vh;
+}
+
+header,footer{
+    background-color: darkslateblue;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+header img {
+    max-height: 40px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+header h1 {
+    margin: 0;
+}
+
+footer {
+    margin-top: 20px;
+    padding: 20px;
+}
+
+
+/*TeacherHome*/
+.stumain {
+    max-width: 100%;
+    display: flex;
+    margin-top: 20px;
+    
+}
+
+.studashboard {
+    width: 15%;
+    height: 100vh;
+    background-color: darkslateblue;
+    padding: 15px;
+    box-sizing: border-box;
+    /*float: left;*/
+}
+
+.studashboard ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.studashboard li {
+    margin-bottom: 10px;
+}
+
+.studashboard a {
+    color: white;
+    text-decoration: none;
+}
+
+.studashboard a:hover {
+    color: black;
+}
+
+.stuRight {
+    width: 85%;
+    /*height: 350px;*/
+    height: 100vh;
+    float: right;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    /*background-image: url('teaherbackground.jpg');
+    background-size: 350px;
+    background-position: center;
+    background-repeat: repeat;*/
+    overflow: auto;
+    flex-grow: 1;
+}
+
+.welcome {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .stumain {
+        padding: 10px;
+    }
+
+    .studashboard {
+        width: 100%;
+    }
+
+    .stusingleexam {
+        width: 100%;
+    }
+
+    .sturesultmain{
+        width: 100%;
+    }
+}
+
+button{
+    background-color: darkslateblue;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 33px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(92, 84, 143);
+}
+
+/*Student Exam*/
+.examrightcont {
+    flex: 2;
+    padding: 10px;
+}
+
+.searchtable {
+    padding: 20px;
+}
+
+#searchInput {
+    height: 25px;
+}
+
+.examtable table, .searchtable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.examtable tr, .examtable th {
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.examtable th {
+    background-color: darkslateblue;
+    color: white;
+    text-align: center;
+}
+
+.examtable a {
+    text-decoration: none;
+    color: white;
+}
+
+/*Exam Paper*/
+.stusingleexam{
+    width: 85%;
+    display: flex;
+}
+
+.stuexam {
+    display: block;
+    width: 100%;
+}
+
+.stuexam h4 {
+    text-align: center;
+}
+
+.stuexam h3 {
+    padding: 10px;
+}
+
+.stusingleexamtable {
+    display: flex;
+    justify-content: center;
+}
+
+#stu {
+    width: 50%;
+    height: 30px;
+    justify-content: center;
+    border: 1px solid black;
+}
+
+#timeleft {
+    text-align: center;
+}
+
+#time {
+    text-align: center;
+}
+
+ul li {
+    list-style-type: none;
+    text-align: left;
+    padding: 5px;
+    margin: 5px;
+}
+
+input[type="radio"]{
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.excontrolbtn {
+    display: flex;
+    justify-content: center; 
+}
+#tablebutton{
+    justify-content: center;
+}
+
+#tablebutton th{
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.savebuttontable {
+    display: flex;
+    justify-content: right;
+}
+
+.savebuttontable th {
+    padding: 20px;
+}
+
+/*student result*/
+.sturesultmain {
+    width: 85%;
+    height: 100vh;
+}
+
+#stugrade, #stureview {
+    border: 1px solid black;
+    justify-content: center;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.stufinalresult, .stuquestionreviewtable {
+    justify-content: center;
+    margin: 20px;
+    padding: 10px;
+}
+
+.stubtn {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+#stureview tr{
+    border: 1px solid black;
+}
+
+
+.nav-button:disabled {
+    color: #ccc; /* Change the text color */
+    background-color:darkgrey; /* Change the background color */
+    border-color: #ddd; /* Change the border color */
+}
+
+/* search exam*/
+.highlight {
+        background-color: lightpink;
+        font-weight: bold;
+    }

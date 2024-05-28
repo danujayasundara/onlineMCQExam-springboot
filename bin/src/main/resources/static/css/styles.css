@@ -1,0 +1,561 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: white;
+    height: 100vh;
+}
+
+.main {
+    max-width: 50%;
+    max-height: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+header,footer{
+    background-color: darkslateblue;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+header img {
+    max-height: 40px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+header h1 {
+    margin: 0;
+}
+
+/*register & login*/
+.register-cont, .login-cont {
+  /* Style the registration container */
+  text-align: center;
+  padding: 20px;
+}
+
+.register-cont label {
+  /* Style labels for better readability */
+  display: block;
+  margin-bottom: 5px;
+}
+
+.register-cont input[type="email"],
+.register-cont input[type="password"],
+.register-cont input[type="text"],
+.register-cont select {
+  /* Style input fields and select element */
+  width: 70%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid gray;
+  border-radius: 3px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form{
+    margin-bottom: 15px;
+}
+
+label{
+    display: block;
+    margin-bottom: 8px;
+}
+
+input[type="email"],
+input[type="password"],
+button{
+    width: 50%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 3px;
+    border: 1px solid gray;
+    box-sizing: border-box;
+}
+
+button{
+    background-color: darkslateblue;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(92, 84, 143);
+}
+#errormsg{
+    color: red;
+    margin-bottom: 10px;
+}
+
+footer {
+    margin-top: 20px;
+    padding: 20px;
+}
+
+
+/*TeacherHome*/
+.teachermain {
+    max-width: 100%;
+    display: flex;
+    margin-top: 20px;
+    
+}
+
+.tdashboard {
+    width: 15%;
+    height: 100vh;
+    background-color: darkslateblue;
+    padding: 15px;
+    box-sizing: border-box;
+    /*float: left;*/
+}
+
+.tdashboard ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.tdashboard li {
+    margin-bottom: 10px;
+}
+
+.tdashboard a {
+    color: white;
+    text-decoration: none;
+}
+
+.tdashboard a:hover {
+    color: black;
+}
+
+.tRight {
+    width: 85%;
+    /*height: 350px;*/
+    height: 100vh;
+    float: right;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-image: url('teaherbackground.jpg');
+    background-size: 350px;
+    background-position: center;
+    background-repeat: repeat;
+    overflow: auto;
+    flex-grow: 1;
+}
+
+.welcome {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .teachermain {
+        padding: 10px;
+    }
+
+    .tdashboard {
+        width: 100%;
+    }
+
+    .tRight {
+        width: 100%;
+    }
+
+    .attendancemain {
+        width: auto;
+    }
+    .singleexamcont,.singleleft,.singlrright {
+	width: 100%;
+}
+	#singleup, #singlemiddletable,#singledown {
+		width: 100%;
+	}
+}
+
+/*Exam.html*/
+.examcontent {
+    width: 85%;
+    /*height: 400px;*/
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+}
+.up {
+    width: 100%;
+    height: 20vh;
+}
+
+.down {
+    width: 100%;
+    height: auto;
+}
+
+.up #eleft{
+    flex: 1;
+    padding: 10px;
+    width: 40%;
+    float: left;
+}
+
+.up #eright{
+    width: 45%;
+    text-align: center;
+    float: right;
+}
+
+.searchbar {
+    margin-bottom: 20px;
+}
+
+.searchbar input[type="text"] {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 50%;
+}
+
+#searchbutton, .addbutton{
+    padding: 8px 15px;
+    background-color: darkslateblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+}
+#searchbutton:hover {
+    background-color: rgb(92, 84, 143);
+}
+
+#tablecontainer {
+    flex: 2;
+    padding: 10px;
+    border: 1px solid black;
+    height: auto;
+   /*overflow-x: auto;*/
+}
+
+#examtable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#examtable th, #examtable tr {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+#examtable th {
+    background-color: rgb(105, 87, 223);
+}
+
+#examtable th:nth-child(1) {
+    width: 30%;
+}
+
+#examtable td:nth-child(2) {
+    width: 200px;
+}
+
+/*single exam*/
+
+.singleexamcont {
+    display: flex;
+    width: 85%;
+  }
+  
+  /*.singleleft,
+  .singlrright {
+    flex: 1;
+    padding: 10px;
+  }*/
+
+  .singleleft {
+    width: 60%;
+    padding: 10px;
+  }
+
+  .singlrright{
+    width: 40%;
+    padding: 10px;
+  }
+  
+  #singleup .left,
+  #singleup .right {
+    display: inline-block;
+  }
+
+  #singleup .left {
+    width: 50%;
+    float: left;
+  }
+
+  #singleup .right{
+    width: 50%;
+  }
+  
+  #singleup .right button {
+    margin-left: 10px;
+    width: 160px;
+  }
+
+  #singledown {
+    padding: 15px;
+  }
+
+  #singledown #examdatetime,
+  #singledown #examduration,
+  #singledown #publishexam{
+    display: inline-block;
+  }
+
+  #singledown #examdatetime {
+    width: 30%;
+    float: left;
+  }
+
+  #singledown #examduration {
+    width: 30%;
+  }
+
+  #singledown #publishexam {
+    width: 25%;
+    float: right;
+  }
+  
+  #questable {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid black;
+  }
+
+  #questable th, #questable tr {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+  
+  #ansoption {
+    list-style: none;
+    padding: 0;
+  }
+  
+  #ansoption li {
+    margin-bottom: 5px;
+  }
+  
+  #ansoption li input[type="radio"] {
+    margin-right: 10px; 
+  }
+
+  .answerlist {
+    border: 1px solid black;
+    padding: 10px;
+  }
+
+  .answerlist button {
+    width: 120px;
+  }
+
+  .answerlist ul li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .answerlist ul li input[type="radio"] {
+    margin-right: 10px;
+    float: left;
+  }
+
+  .answerlist #correctans,
+  .answerlist li {
+    display: inline-block;
+  }
+
+  .answerlist #correctans {
+    width: 5%;
+    float: left;
+  }
+
+  .answerlist li{
+    width: 35%;
+  }
+  
+  #answerForm {
+	border: 1px solid black;
+	padding: 20px;
+}
+
+  /*attendance*/
+  .attendancecontent {
+    flex: 2; 
+    padding: 10px;
+  }
+  
+  .attright {
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between; 
+    height: 100%;
+  }
+  
+  .attright h3 {
+    margin-bottom: 10px;
+  }
+  
+  .rightdivided {
+    display: flex; 
+    flex: 1; 
+  }
+  
+  .attrightleft,
+  .attrightright {
+    flex: 1; 
+    padding: 10px;
+  }
+  
+  .attleftup,
+  .attleftdown,
+  .attrightright 
+  .stulist li{
+    margin-bottom: 10px; 
+    border: 1px solid black;
+    padding: 10px;
+  }
+  .attrightright {
+    border: 1px solid black;
+  }
+  
+  .end {
+    align-self: flex-end; 
+    padding: 10px;
+  }
+
+  /*overall result*/
+  .overallcont {
+    display: flex; 
+    flex-wrap: wrap;
+    width: 85%;
+  }
+  
+  .overallhead {
+    width: 100%; 
+    padding: 10px;
+  }
+  
+  .overallcontdivide {
+    display: flex; 
+    flex: 1; 
+  }
+  
+  .overallleft,
+  .overallright {
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 10px;
+    /*border: 1px solid black; */
+  }
+  
+  .overallleftup,
+  .overallleftdown,
+  .overallrighttup,
+  .overallrightdown {
+    flex: 1; 
+    padding: 5px;
+    border: 1px solid black;
+  }
+ 
+  .topstutable, .lowstutable {
+    width: 100%;
+    border-collapse: collapse;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .topstutable th, .topstutable tr,
+  .lowstutable th, .lowstutable tr {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .topstutable th, .lowstutable th {
+    background-color: rgb(105, 87, 223);
+  }
+
+  .topstutable th:nth-child(1),
+  .lowstutable th:nth-child(1) {
+    width: 30%;
+  }
+
+  .topstutable td:nth-child(2),
+  .lowstutable td:nth-child(2) {
+    width: 200px;
+  }
+
+  /*attendance*/
+  .attendancemain {
+    display: flex;
+    width: 85%;
+  }
+
+  .examtime {
+    width: 100%;
+  }
+
+ .attleft {
+    float: left;
+    width: 45%;
+    padding: 10px; 
+    margin: 20px;
+    align-items: center;
+ }
+ 
+ .attright {
+    padding: 10px; 
+    height: auto;
+    width: 45%;
+    margin: 20px;
+ }
+ 
+ .timeleft, .Startedending, .attstudent{
+    border: 1px solid black;
+    height: auto;
+ }
+ .timeleft{
+    margin-bottom: 20px;
+ }
+
+ .attstudent {
+    margin-top: 18px;
+ }
+
+ table {
+    text-align: center;
+ }
+
+ .endexam {
+    padding: 10px;
+ }
+ 
+ /* search exam*/
+.highlight {
+        background-color: lightpink;
+        font-weight: bold;
+    }

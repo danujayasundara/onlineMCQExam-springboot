@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student-Dashboard</title>
+    <link rel="stylesheet" th:href="@{../css/stustyle.css}">
+</head>
+<body>
+    <header>
+        <div class="mainheader">
+            <img src="image/logo.png" alt="Logo">
+            <h1>Edueye</h1>
+        </div>
+    </header>
+    <div class="stumain">
+        <div class="studashboard">
+            <ul>
+                <li><a th:href="@{/user-page}">Home</a></li>
+                <li><a th:href="@{/stuexam}">Exam</a></li>
+                <!--<li><a href="sturesult.html">Result</a></li>-->
+                <li><a href="index.html">Logout</a></li>
+            </ul>
+        </div>
+        <div class="stuRight">
+            <div class="welcome">
+                <h3>Welcome!, [[${user.getFullname()}]]</h3>
+                <span sec:authorize="isAuthenticated">
+        			<a th:href="@{/logout}">Logout</a>
+        		</span>
+                <p>This is your student dashboard where you can attend exams and view your results.</p>
+            </div>
+            <div class="stuintroduction">
+                <p>Check the dashboard for available exams. <br>Ensure that you start the exam within the specified start time and complete it within the duration provided.
+                    <br>Read each question carefully and select the correct answer from the provided options.
+                    If allowed, you may save your answers as you progress through the exam to review and make changes later.
+                    <br>Consider saving your answers periodically to avoid losing them due to unexpected interruptions.
+                    <br>After submitting the exam, wait for the results to be processed and displayed.</p>
+                    <p><b>honesty and integrity while taking exams. Do not engage in cheating or unauthorized practices.</b></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="mainfooter">
+            &copy; 2024 EduEye. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

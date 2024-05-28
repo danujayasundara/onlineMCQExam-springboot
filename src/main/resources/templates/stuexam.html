@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams</title>
+    <link rel="stylesheet" th:href="@{../css/stustyle.css}">
+    <style>
+    	a.endedExam {
+	    color: #999999; /* Change color to a lighter shade of gray */
+	    text-decoration: none; /* Remove underline */
+	    cursor: not-allowed; /* Change cursor to indicate it's not clickable */
+	    pointer-events: none; /* Disable pointer events */
+	    opacity: 0.5; /* Reduce opacity to visually indicate it's disabled */
+	    /* Optionally, you can add a background color or any other styles to further indicate it's disabled */
+	}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="mainheader">
+            <img src="image/logo.png" alt="Logo">
+            <h1>Edueye</h1>
+        </div>
+    </header>
+
+    <div class="stumain">
+        <div class="studashboard">
+            
+            <ul>
+                <li><a th:href="@{/user-page}">Home</a></li>
+                <li><a th:href="@{/stuexam}">Exam</a></li>
+                <!--<li><a href="sturesult.html">Result</a></li>-->
+                <li><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="examrightcont">
+            <div class="searchtable">
+                <table>
+                    <tr>
+                    	<form id="searchForm">
+						    <th><input type="text" id="searchInput" name="examName"></th>
+						    <th id="search"><button id="searchButton" type="submit">Search</button></th>
+						</form>
+                    </tr>
+                </table>
+            </div>
+            <div class="examtable">
+                <table>
+	                <thead>
+	                    <tr>
+	                        <th id="exam"><a href="exampaper.html">Exam</a></th>
+	                        <th>Starting Time</th>
+	                        <th>Exam Duration</th>
+	                        <th>Status</th>
+	                    </tr>
+	                </thead>
+                    <tbody id="examBody">
+			            
+        			</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="mainfooter">
+            &copy; 2024 EduEye. All rights reserved.
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+    	
+    	
+    	var userId = sessionStorage.getItem('userId');
+	    console.log('User Id in local', userId);
+	
+    	document.getElementById('searchForm').addEventListener('submit', function(event) {
+			    event.preventDefault();
+			    const exam_name = document.getElementById('searchInput').value;
+			    searchExam(exam_name);
+			    
+			    function searchExam(exam_name) {
+		    	fetch(`/studentexam?exam_name=${encodeURIComponent(exam_name)}`)
+		        .then(response => response.json())
+		        .then(data => {
+		            
+		            console.log(data);
+		        })
+		        .catch(error => console.error('Error:', error));
+		}
+		});
+		
+		/*<![CDATA[*/
+	    function myFunction(row) {
+	        const examId = row.getAttribute('data-examid');
+	      //  var userId = sessionStorage.getItem('userId');
+	       // const userId = sessionStorage.getItem('userId');
+	        console.log('Clicked Exam ID:', examId);
+	      //  console.log('User ID:', userId);
+	        
+	        //let attemptStatus = $(row).find('td:last').text().trim().toLowerCase() === 'attended' ? 1 : 0; 
+	
+	        // window.location.href = '/exampaper?examId=' + examId + '&userId=' + userId;
+	    }
+	    /*]]>*/
+	    
+	    
+	    // develop search bar
+	    $(document).ready(function() {
+			 $('#searchForm').submit(function(e) {
+			    e.preventDefault();
+				var searchText = $('#searchInput').val().toLowerCase().trim(); 
+				var matchingExams = $('.searchable').filter(function() {
+			    var examName = $(this).find('td:first-child').text().toLowerCase(); 
+			    return examName.includes(searchText);
+			  });
+			if (matchingExams.length > 0) {
+			   matchingExams.addClass('highlight');
+			   } else {
+			      alert('No matching exam found.');
+			      $('.searchable').removeClass('highlight');
+			    }
+			});
+		});
+	    
+	    //end exam for students
+		
+	
+	/*document.addEventListener('DOMContentLoaded', function () {
+		var userId = sessionStorage.getItem('userId');
+	
+		var examRows = document.querySelectorAll('#examBody tr');
+	    examRows.forEach(function (row) {
+	        row.setAttribute('data-userid', userId);
+	    });
+	    // Get all links with the class 'examLink'
+	    var examLinks = document.querySelectorAll('.examLink');
+	    
+	    examLinks.forEach(function (link) {
+	        // Replace the placeholder 'PLACEHOLDER_USERID' with the actual userId
+	        var href = link.getAttribute('href');
+	        if (href) {
+	            link.setAttribute('href', href.replace('PLACEHOLDER_USERID', userId));
+	        }
+	    });
+	});*/
+	
+	//////
+	 window.onload = function() {
+            var userId = sessionStorage.getItem('userId');
+            console.log('UserId', userId);
+            if (userId) {
+                Promise.all([
+                    fetch('/getExamData', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ userId: userId })
+                    }),
+                    fetch('/ended-exams')
+                ])
+                .then(responses => Promise.all(responses.map(response => response.json())))
+                .then(([examData, endedExams]) => {
+                    console.log('Exam Data:', examData);
+                    console.log('Ended Exams:', endedExams);
+                    
+                    // Ensure endedExams is defined and an array
+                    if (endedExams && Array.isArray(endedExams)) {
+                        updateExamTable(examData.exams, examData.examAttemptDtos, endedExams);
+                    } else {
+                        console.error('Ended Exams data is missing or invalid.');
+                        updateExamTable(examData.exams, examData.examAttemptDtos, []);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        };
+
+        function updateExamTable(exams, examAttemptDtos, endedExams) {
+            // Function to update the exam table with the received data
+            var examBody = document.getElementById('examBody');
+            examBody.innerHTML = '';
+            exams.forEach(exam => {
+                var row = document.createElement('tr');
+                row.className = 'searchable';
+                row.setAttribute('data-examid', exam.exam_id);
+
+                var examNameCell = document.createElement('td');
+                var examLink = document.createElement('a');
+                examLink.textContent = exam.exam_name;
+                examLink.style.color = 'black';
+                examLink.className = 'examLink';
+                examLink.setAttribute('data-exam-id', exam.exam_id);
+                
+                // Check if the exam ID is in the endedExams array
+                var isEnded = endedExams.some(endedExam => endedExam.examId === exam.exam_id);
+                if (isEnded) {
+                    examLink.classList.add('endedExam'); // Add a class for styling
+                    examLink.removeAttribute('href'); // Remove the href attribute to disable the link
+                } else {
+                    // If the exam is not ended, set the link href
+                    examLink.href = '/' + exam.exam_id + '/questions?examId=' + exam.exam_id + '&userId=' + sessionStorage.getItem('userId');
+                }
+
+                examNameCell.appendChild(examLink);
+
+                var startTimeCell = document.createElement('td');
+                startTimeCell.textContent = exam.dateTime;
+
+                var durationCell = document.createElement('td');
+                durationCell.textContent = exam.duration;
+
+                var statusCell = document.createElement('td');
+                var statusSpan = document.createElement('span');
+                var attempt = examAttemptDtos.find(attempt => attempt.examId === exam.exam_id);
+                if (attempt) {
+                    statusSpan.textContent = attempt.attended ? 'Attended' : 'Pending';
+                } else {
+                    statusSpan.textContent = 'Pending';
+                }
+                statusCell.appendChild(statusSpan);
+
+                row.appendChild(examNameCell);
+                row.appendChild(startTimeCell);
+                row.appendChild(durationCell);
+                row.appendChild(statusCell);
+
+                examBody.appendChild(row);
+            });
+        }
+
+ </script>
+</body>
+</html>

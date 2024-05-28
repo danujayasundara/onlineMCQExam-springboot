@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Question</title>
+    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Add Question</h1>
+        <form id="questionForm" th:action="@{/addQuestion}"  method="post">
+        
+        <select th:field="*{question.exam}" name="exam"  required>
+			        <option value="">Select an exam</option>
+			        <option th:each="exam : ${exams}" th:value="${exam.exam_id}" th:text="${exam.exam_name}"></option>
+			    </select>
+   
+            <div class="form-group">
+                <label for="questionText">Question:</label>
+                <input type="text" th:field="*{question.question_content}" id="questionText" name="questionText" class="form-control" required>
+            </div>
+            <div class="form-group">
+				<button type="submit" id = "addQuestion" onclick="getQuestion()" class="btn btn-primary">Add Question</button>
+                <!--<a href="#" type="button" id="gobackBtn" class="btn btn-secondary">Back</a>-->
+                <!--<button type="button" id="storeQuestionBtn" class="btn btn-primary" onclick="redirectToSamePage()">Store Question Details</button>-->
+
+            </div>
+            </form>
+            <form th:action="@{/addQuestion}"  method="post">
+            <div class="form-group">
+			    <label for="answer1">Answer 1:</label>
+			    <input type="text" name="answers" id="answer1" class="form-control" required>
+			    <input type="radio" name="correctAnswer" value="answer1"> Correct Answer
+			</div>
+			<div class="form-group">
+			    <label for="answer2">Answer 2:</label>
+			    <input type="text" name="answers" id="answer2" class="form-control" required>
+			    <input type="radio" name="correctAnswer" value="answer2"> Correct Answer
+			</div>
+			<div class="form-group">
+			    <label for="answer3">Answer 3:</label>
+			    <input type="text" name="answers" id="answer3" class="form-control" required>
+			    <input type="radio" name="correctAnswer" value="answer3"> Correct Answer
+			</div>
+			<div class="form-group">
+			    <label for="answer4">Answer 4:</label>
+			    <input type="text" name="answers" id="answer4" class="form-control" required>
+			    <input type="radio" name="correctAnswer" value="answer4"> Correct Answer
+			</div>
+			
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Add Answers</button>
+                <a href="#" type="button" id="gobackBtn" class="btn btn-secondary">Back</a>
+            </div>
+
+        </form>
+    </div>
+    
+    <script th:inline="javascript">
+    
+    	document.getElementById('gobackBtn').onclick = function() {
+		    history.back();
+		};
+		
+		function redirectToSamePage() {
+        // Get the current URL
+        var currentUrl = window.location.href;
+
+        // Redirect to the same page
+        window.location.href = currentUrl;
+    }
+	
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results</title>
+    <link rel="stylesheet" th:href="@{../css/stustyle.css}">
+</head>
+<body>
+    <header>
+        <div class="mainheader">
+            <img src="image/logo.png" alt="Logo">
+            <h1>Edueye</h1>
+        </div>
+    </header>
+
+    <div class="stumain">
+        <div class="studashboard">
+           <ul>
+                <li><a th:href="@{/user-page}">Home</a></li>
+                <li><a th:href="@{/stuexam}">Exam</a></li>
+                <li><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="sturesultmain">
+            <div class="stuexamresult">
+                <h3 id="examNameMain"></h3>
+        
+                <div class="stufinalresult">
+                  <table id="stugrade">
+                      <tr>
+                          <td>Exam Completed</td>
+                      </tr>
+                      <tr>
+                          <th><span th:text="${passFail}"></span></th>
+                      </tr>
+                      <tr>
+                        <th><span th:text="${grade} +' '+${result} + ' points'"></span></th>
+                      </tr>
+                  </table>
+                </div>
+        
+              </div>
+              <div class="stuquestion">
+                <div class="stuquestionreviewtable">
+                  <table id="stureview">
+                      <tr>
+                          <td>Questions</td>
+                      </tr>
+                      <tr th:each="review : ${questionReviews}">
+				        <td th:text="${review.question.question_content}"></td>
+				        <td th:text="${review.isAnswerCorrect ? 'Correct' : 'Incorrect'}"></td>
+				    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="stubtn">
+                <table>
+                    <tr>
+                        <th><button onclick="goToStuExamPage()">Close</button></th>
+                    </tr>
+                </table>
+              </div>
+        </div>
+    </div>
+    
+ <script>
+ 	
+ 	function getExamIdFromURL() {
+	        const urlPath = window.location.pathname;
+	        const pathParts = urlPath.split('/');
+	        return pathParts[pathParts.length - 1];
+	    }
+	    
+	function fetchAndDisplayExamName() {
+	    const examId = getExamIdFromURL();
+	    fetch('/exam/' + examId)
+	        .then(response => {
+	            if (!response.ok) {
+	                throw new Error('Network response was not ok');
+	            }
+	            return response.json();
+	        })
+	        .then(data => {
+	            console.log('Exam Details:', data); 
+	            const examNameElement = document.getElementById('examNameMain');
+	            if (examNameElement) {
+	                examNameElement.textContent = data.examName;
+	            }
+	        })
+	        .catch(error => {
+	            console.error('Error fetching exam details:', error);
+	        });
+	}
+	
+	document.addEventListener('DOMContentLoaded', fetchAndDisplayExamName);
+
+    function goToStuExamPage() {
+        window.location.href = "/stuexam"; 
+    }
+    
+</script>
+
+    <footer>
+        <div class="mainfooter">
+            &copy; 2024 EduEye. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

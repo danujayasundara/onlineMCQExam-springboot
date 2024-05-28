@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Exam</title>
+   
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Add Exam</h1>
+        
+        <form id="examForm" th:action="@{/add}" th:object="${exam}" method="post" class="form-inline">
+            <div class="form-group mr-2">
+                <label for="examName">Exam Name:</label>
+                <input type="text" th:field="*{exam_name}" id="examName" name="examName" class="form-control" placeholder="Enter exam name" required>
+            </div>
+            
+            <input type="hidden" th:field="*{lastUpdate}" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
+            
+            <input type="hidden" th:field="*{e_status}" th:value="false">
+            
+            <button type="submit" class="btn btn-primary">Save Paper</button>
+        </form>
+    </div>
+
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

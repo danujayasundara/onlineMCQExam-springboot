@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.com">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Exam</title>
+    <link rel="stylesheet" th:href="@{../css/stustyle.css}">
+</head>
+<body>
+    <header>
+        <div class="mainheader">
+           <img src="image/logo.png" alt="Logo">
+            <h1>Edueye</h1>
+        </div>
+    </header>
+    <div class="stumain">
+    	<div class="studashboard">
+            
+            <ul>
+                <li><a th:href="@{/user-page}">Home</a></li>
+                <li><a th:href="@{/stuexam}">Exam</a></li>
+                <li><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="stusingleexam">
+        	<div class="stuexam">
+        		<h3 id ="examNameMain"></h3>
+        		<!--<h1 th:text="'Exam: ' + ${examName}"></h1>-->
+              	 <h4>Time Left: <span id="timer">00:00:00</span> mins</h4>
+              	 <div id="duration" th:text="${duration}" style="display: none;"></div>
+              	<div class="stusingleexamtable">
+				  <table id="stu">
+				    <tr>
+				        <td th:text="${currentQuestion.question_content}"></td>
+				        <td th:text="${currentQuestion.question_id}"></td>
+				    </tr>
+				    <tr>
+				        <td>
+				            <ul class="answers" th:each="answer : ${currentAnswers}">
+				                <li>
+				                    <input type="radio" name="selectedAnswer" th:id="'answer_' + ${answer.answer_id}"
+				                     th:value="${answer.answer_id}" onchange="saveSelectedAnswer(event)">
+				                    <label th:text="${answer.answer}"></label>
+				                </li>
+				            </ul>
+				        </td>
+				    </tr> 
+				</table>
+
+              </div>
+              <div class="excontrolbtn">
+				    <table id="tablebutton">
+					    <tr>
+					        <th>
+					            <form method="get" name="previousForm" onsubmit="goToPreviousQuestion();">
+					                <input type="hidden" name="currentQuestionIndex" th:value="${currentQuestionIndex - 1}" />
+					                <button type="submit" name="action" value="previous" th:disabled="${currentQuestionIndex == 0}" class="nav-button">Previous</button>
+					            </form>
+					        </th>
+					        <th th:text="'Question ' + (${currentQuestionIndex + 1}) + ' of '+ (${totalQuestions})"></th>
+					        <th>
+					            <form method="get" name="nextForm" onsubmit="goToNextQuestion()">
+					                <input type="hidden" name="currentQuestionIndex" th:value="${currentQuestionIndex + 1}" />
+					                <button type="submit" name="action" value="next" th:disabled="${currentQuestionIndex == totalQuestions - 1}" class="nav-button">Next</button>
+					            </form>
+					        </th>
+					    </tr>
+					</table>
+
+		</div>
+      
+              <div class="savebuttontable">
+                <table>
+                    <tr>
+                        <th><input type="hidden" id="questionId" th:value="${currentQuestion.question_id}" />
+							<button onclick="saveSelectedAnswer()">Save</button></th>
+                        <th><button onclick="displaySavedAnswers()">Complete</button></th>
+                    </tr>
+                </table>
+              </div>
+        	</div>
+        </div>
+    </div>
+   
+ <script>
+ 
+ 	// Function to fetch attemptId from backend
+	/* function fetchAttemptId(userId, examId) {
+	    const url = `/getAttemptId?userId=${userId}&examId=${examId}`;
+	    return fetch(url)
+	        .then(response => response.json())
+	        .then(data => data.attemptId)
+	        .catch(error => {
+	            console.error('Error fetching attemptId:', error);
+	            return null;
+	        });
+	} */
+
+    function saveSelectedAnswer() {
+	    event.preventDefault(); 
+	
+	    const questionId = document.getElementById('questionId').value;
+	    const selectedAnswerId = document.querySelector('input[name=selectedAnswer]:checked').value;
+	    const data = {
+	        questionId: questionId,
+	        selectedAnswerId: selectedAnswerId
+	    };
+	    console.log('Question ID:', questionId, 'Answer ID:', selectedAnswerId);
+	    localStorage.setItem(`selectedAnswer_${questionId}`, JSON.stringify(data));
+	    console.log(`Answer for question ${questionId} saved:`, data);
+	}
+
+
+    window.addEventListener('load', function() {
+	    const questionId = document.getElementById('questionId').value;
+	    const storedData = localStorage.getItem(`selectedAnswer_${questionId}`);
+	    if (storedData) {
+	        const parsedData = JSON.parse(storedData);
+	        const selectedAnswerId = parsedData.selectedAnswerId;
+	        document.querySelector(`input[name=selectedAnswer][value="${selectedAnswerId}"]`).checked = true;
+	    }
+	    
+	});
+	function displaySavedAnswers() {
+		const savedAnswers = [];
+		const examId = localStorage.getItem('examId');
+    	const userId = localStorage.getItem('userId');
+    	console.log('Exam ID:', examId);
+		console.log('User ID:', userId);
+    	if (!examId || !userId) {
+        	console.log('No examId or userId found in localStorage');
+        	return; 
+    	}
+    	
+	    for (let key in localStorage) {
+	        if (key.startsWith('selectedAnswer_')) {
+	            const data = JSON.parse(localStorage.getItem(key));
+	            const selectedAnswer = {
+	                selectAns_id: null,
+	                selected_answer: data.selectedAnswerId,
+	                question_id: data.questionId,
+	                examId: examId,
+	                userId: userId
+	            };
+	            savedAnswers.push(selectedAnswer);
+	            console.log(`Question ID: ${data.questionId}, Answer ID: ${data.selectedAnswerId}`);
+	        }
+	    }
+	   
+	     const selectA = fetch('/saveanswers', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify(savedAnswers)
+	    });
+	    selectA.then(response => {
+	        if (!response.ok) {
+	            throw new Error('Network response was not ok');
+	        }
+	        console.log('Selected answers sent successfully');
+	        const updateAttempt = fetch('/completeAttempt', {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json'
+	            },
+	            body: JSON.stringify({ examId: examId, userId: userId })
+	        });
+	        updateAttempt.then(response => {
+	            if (!response.ok) {
+	                throw new Error('Error updating attempt status');
+	            }
+	            console.log('Attempt status updated successfully');
+	        	window.location.href = '/result/' + examId;
+	        }).catch(error => {
+            	console.error('Error updating attempt status:', error);
+        	});
+	    })
+	    .catch(error => {
+	        console.error('Error sending selected answers:', error);
+	    });
+	    
+	     localStorage.clear();
+    };
+    
+	// Function to parse URL parameters
+	function getParameterByName(name, url) {
+	    if (!url) url = window.location.href;
+	    name = name.replace(/[\[\]]/g, '\\$&');
+	    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+	    const results = regex.exec(url);
+	    if (!results) return null;
+	    if (!results[2]) return '';
+	    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+	}
+	
+	// Get examId and userId from URL parameters
+	const examId = getParameterByName('examId');
+	const userId = getParameterByName('userId');
+	console.log('Exam ID:', examId);
+	console.log('User ID:', userId);
+	
+	// save examattempt details
+	document.addEventListener('DOMContentLoaded', function() {
+	    const examId = getParameterByName('examId');
+		const userId = getParameterByName('userId');
+		
+		if (examId && userId) {
+	        localStorage.setItem('examId', examId);
+	        localStorage.setItem('userId', userId);
+	    } else {
+	        console.log('No data found in URL parameters');
+	    }
+		
+	    if (examId && userId) {
+	        
+	        const dataAt = {
+	            examId: examId,  
+            	userId: userId
+	        };
+	
+		// Send data to backend
+	        const exAtt = fetch('/saveAttemptData', {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json'
+	            },
+	            body: JSON.stringify(dataAt)
+	        })
+	        exAtt.then(response => {
+	            if (!response.ok) {
+	                throw new Error('Network response was not ok');
+	            }
+	            console.log('Data sent successfully');
+	            
+	            //localStorage.removeItem('examId');
+	            //localStorage.removeItem('userId');
+	        })
+	        .catch(error => {
+	            console.error('Error sending data:', error);
+	        });
+	    } else {
+	        console.log('No data found in local storage');
+	    }
+	    fetchAndDisplayExamName();
+	}); 
+	
+	
+    
+        // Timer logic
+      document.addEventListener('DOMContentLoaded', function() {
+	    const timerElement = document.getElementById('timer');
+	
+	    function initializeTimer(duration) {
+	        let remainingSeconds = parseInt(localStorage.getItem('remainingSeconds'));
+	        if (!remainingSeconds) {
+	            remainingSeconds = parseInt(duration) * 60;
+	        }
+	
+	        const interval = setInterval(function() {
+	            remainingSeconds--;
+	            if (remainingSeconds < 0) {
+	                clearInterval(interval);
+	                displaySavedAnswers();
+	            } else {
+	                const hours = Math.floor(remainingSeconds / 3600);
+	                const minutes = Math.floor((remainingSeconds % 3600) / 60);
+	                const seconds = remainingSeconds % 60;
+	                timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+	                localStorage.setItem('remainingSeconds', remainingSeconds);
+	            }
+	        }, 1000);
+	    }
+	
+	    if (!localStorage.getItem('timerInitialized')) {
+	        fetch('/getduration/' + examId)
+	            .then(response => response.json())
+	            .then(data => {
+	                const duration = data.duration;
+	                console.log('Duration fetched from response:', duration);
+	                localStorage.setItem('duration', duration);
+	                initializeTimer(duration);
+	                localStorage.setItem('timerInitialized', 'true');
+	            })
+	            .catch(error => {
+	                console.error('Error fetching duration:', error);
+	            });
+	    } else {
+	        const duration = localStorage.getItem('duration');
+	        initializeTimer(duration);
+	    }
+	
+	    window.goToPreviousQuestion = function() {
+	        const currentIndex = parseInt(getParameterByName('currentQuestionIndex'));
+	        const previousIndex = currentIndex - 1;
+	        if (previousIndex >= 0) {
+	            localStorage.setItem('currentQuestionIndex', previousIndex);
+	            window.location.href = `/examPage?examId=${examId}&currentQuestionIndex=${previousIndex}`;
+	        }
+	        return false;
+	    };
+	
+	    window.goToNextQuestion = function() {
+	        const currentIndex = parseInt(getParameterByName('currentQuestionIndex'));
+	        const nextIndex = currentIndex + 1;
+	        if (nextIndex < totalQuestions) {
+	            localStorage.setItem('currentQuestionIndex', nextIndex);
+	            window.location.href = `/examPage?examId=${examId}&currentQuestionIndex=${nextIndex}`;
+	        }
+	        return false;
+	    };
+	});
+
+	// display exam name
+	function fetchAndDisplayExamName() {
+            const examId = getParameterByName('examId');
+            const storedExamName = localStorage.getItem('examName');
+             console.log('Exam name stored in localStorage***:', storedExamName);
+            if (storedExamName) {
+                document.getElementById('examNameMain').textContent = storedExamName;
+            } else {
+                fetch('/exam/' + examId)
+                    .then(response => response.json())
+                    .then(data => {
+                        const examNameElement = document.getElementById('examNameMain');
+                        examNameElement.textContent = data.examName;
+                        localStorage.setItem('examName', data.examName);
+                       
+                    })
+                    .catch(error => {
+                        console.error('Error fetching exam details:', error);
+                    });
+            }
+        }
+
+	
+ </script>       
+</body>
+</html>

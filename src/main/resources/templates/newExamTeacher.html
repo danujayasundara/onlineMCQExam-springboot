@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Single Exam</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{../css/styles.css}">
+  <!--<script src="/js/newTeacherExam.js"></script>-->
+  <style>
+    .navbar {
+      justify-content: flex-start; 
+    }
+
+    .navbar-col {
+      background-color: darkslateblue; 
+      color: white;
+      justify-content: flex-start; 
+    }
+
+    .navbar-col .text-white{
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .mb-0 {
+      text-align: center;
+    }
+
+
+    @media (min-width: 768px) {
+      .navbar-col {
+        flex: 0 0 200px; 
+      }
+
+      .form-col {
+        flex: 0 0 calc(100% - 200px); 
+      }
+
+    
+      .table-col {
+        flex: 0 0 calc(75% - 15px); 
+      }
+
+      
+      .form-right-col {
+        flex: 0 0 calc(25% - 15px); 
+      }
+
+    }
+    .align-items-center{
+      height: 50px;
+    }
+
+    .align-items-center img{
+      width: 80px;
+      height: 40px;
+      justify-content:center;
+      margin-left: 430px;
+    }
+    header, footer{
+      background-color: darkslateblue;
+    }
+
+    .col-md-8 {
+      border: 1px solid black;
+      
+    }
+    .btn-primary {
+	width : 130px;
+	background-color: darkslateblue;
+	margin :5px;
+	}
+	
+	.singlrright {
+		width:400px;
+	}
+	#addQuestionBtn {
+		width: 140px;
+	}
+	
+	.form-group {
+    margin-bottom: 15px;
+	}
+	
+	label {
+	    display: inline-block;
+	    width: 100px;
+	    vertical-align: top; 
+	}
+	
+	input[type="radio"] {
+	    margin-right: 10px; 
+	}
+	
+  </style>
+</head>
+<body>
+  <header class="bg-darkslateblue text-white py-3">
+    <div class="container">
+      <div class="row align-items-center">
+          <img src="image/logo.png" alt="Logo" class="img-fluid">
+      </div>
+      <div class="col-md-10">
+        <h1 class="mb-0">Edueye</h1>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-1 navbar-col">
+        <ul class="list-unstyled">
+          <li><a th:href="@{/admin-page}" class="text-white">Home</a></li>
+          <li><a th:href="@{/exams}">Exam</a></li>
+          <!--<li><a href="attendance.html" class="text-white">Attendance</a></li>
+          <li><a href="overallresult.html" class="text-white">Overall Result</a></li>-->
+          <li><a th:href="@{/logout}" class="text-white">Logout</a></li>
+        </ul>
+      </div>
+      <div class="col-md-12 form-col">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-8">
+      		
+            <div class="d-flex justify-content-between align-items-center">
+		        <h6 class="mb-0">Question List</h6>
+		        <!--<form th:action="@{/addQuestion}" method="post">
+		        	<a th:href="@{/addQuestion(examId=${exam.exam_id})}" type="submit" id="addQuestionBtn" class="btn btn-success">Add Question</a>
+		        </form>-->
+		      <button id="addQuestionBtn">Add Question</button>
+		    </div>
+            <div id="singlemiddletable">
+           
+              <table id="questable" class="table">
+                <thead>
+                  <tr>
+                    <th>Question</th>
+                    <th>Answer</th>
+                  </tr>
+                </thead>
+                <tbody id="questionTableBody">
+	               <tr th:each="question : ${questions}" th:id="'question_' + ${question.question_id}"
+	               data-questionId="${question.question_id}" th:onclick="'populateForm(' + ${question.question_id} + ')'" class="question-row">
+	            	<td>
+	               		<a href="#" id="questionLink${question.question_id}" class = "questionLink " th:data-question-id="${question.question_id}"
+	               		 th:text="${question.question_content}" th:attr="data-questionId=${question.question_id}"
+	               		 th:onclick="'handleQuestionLinkClick(event, ' + ${question.question_id} + ')'"></a>
+               		 </td>
+		             <td id = "correctAns">            
+					    <span th:each="answer : ${question.answers}">
+					        <span th:if="${answer.correctAnswer}" th:text = "${answer.answer}">
+					         
+					        </span>
+					    </span>
+		            </td>
+		        </tr>
+                </tbody>
+              </table>
+            
+            </div>
+            <form id = "examForm" th:action="@{/saveExam}" th:object="${exam}" method="post" class="form-inline">
+            
+            <input type="text" id="inputExam" name= "inputExam" placeholder="Exam Name" > <!-- -->
+              <div class="form-group mr-2">
+                  <label for="examDateTime" class="mr-2">Exam Date Time:</label>
+                  <input type="datetime-local" th:field="*{dateTime}" id="examDateTime" name="examDateTime"
+                  th:value="''"  class="form-control" required
+                  >
+                  
+              </div><br><br>
+              <div class="form-group mr-2">
+                  <label for="examDuration" class="mr-2">Exam Duration (in minutes):</label>
+                  <input type="number" th:value="''" th:field="*{duration}" id="examDuration" name="examDuration" class="form-control" placeholder="Enter exam duration" required>
+              </div>
+              <div class="form-group ml-4">
+              	
+                  <button type="submit" id = "publish" class="btn btn-primary" value="submit" onclick ="publishExam()">Publish Paper</button>
+              </div>
+            </form>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-4" >
+            <div class="singlrright">
+              <form style="display: none;" th:action="@{/saveQuestion}" method="post" id="questionForm" > <!--style="display: none;"-->
+              
+			    <input type="text" id = "question_content" name="question_content" placeholder="Enter question " th:value="${question_content}" required>
+			    
+			   	
+        		<div class="form-group">
+			        <input type="radio" id = "correctAnswer" name="correctAnswer" value="answer1" > <!--th:checked="${correctAnswer == 'answer1'}"-->
+			        <label for="answer1">Answer 1:</label>
+			        <input type="text" name="answer1" id="answer1" class="form-control" th:value="${answer1}" required>
+			    </div>
+			    <div class="form-group">
+			        <input type="radio" id = "correctAnswer" name="correctAnswer" value="answer2">
+			        <label for="answer2">Answer 2:</label>
+			        <input type="text" name="answer2" id="answer2" class="form-control" required>
+			    </div>
+			    <div class="form-group">
+			        <input type="radio" id = "correctAnswer" name="correctAnswer" value="answer3">
+			        <label for="answer3">Answer 3:</label>
+			        <input type="text" name="answer3" id="answer3" class="form-control" required>
+			    </div>
+			    <div class="form-group">
+			        <input type="radio" id = "correctAnswer" name="correctAnswer" value="answer4">
+			       <label for="answer4">Answer 4:</label>
+			        <input type="text" name="answer4" id="answer4" class="form-control" required>
+			    </div>   
+			    
+			</form>
+			
+			<button type="submit" value ="submit" id= "saveButton">Save</button>
+			
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-darkslateblue text-white py-3 mt-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          &copy; 2024 EduEye. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script th:inline="javascript">
+   
+		// Retrieve selected exam ID from localStorage
+		const selectedExamId = localStorage.getItem('selectedExamId');
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, '\\$&');
+		    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+		    const results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		}
+	
+		// Get examId and userId from URL parameters
+		const examId2 = getParameterByName('examId');
+		console.log('Exam id******'+examId2);
+		let eId = null;
+			
+		if (selectedExamId) {
+		    console.log('Selected Exam ID:', selectedExamId);
+		    
+		} else {
+		    console.error('No selected exam ID found in localStorage.');
+		}
+		
+		let questionIds;
+		console.log('array of question IDs:',questionIds);
+		
+		// get questionid by examid
+		$(document).ready(function() {
+		    $('#fetchQuestionsBtn').click(function() {
+		        fetch('/exam/' + examId2 + '/questions')
+		            .then(response => {
+		                if (!response.ok) {
+		                    throw new Error('Network response was not ok');
+		                }
+		                return response.json();
+		            })
+		            .then(data => {
+		                console.log('Question IDs:', data);
+		                console.log('Number of question IDs:', data.length);
+		                questionIds = data;
+		            })
+		            .catch(error => {
+		                console.error('Error fetching question IDs:', error);
+		                alert('Failed to fetch question IDs. Please try again.');
+		            });
+		    });
+		});
+
+        // Display question form
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const questionForm = document.getElementById('questionForm');
+
+        /* addQuestionBtn.addEventListener('click', () => {
+            questionForm.style.display = 'block';
+        }); */
+        
+         $(document).ready(function () { 
+			let isPublished = false;
+	    	//let examId = localStorage.getItem('selectedExamId');
+	    	// let examId = parseInt(localStorage.getItem('selectedExamId'));
+	    	console.log('Selected Exam ID for publish exam:', selectedExamId);
+			
+			function publishExam(){
+				isPublished = isPublished === true ? false : true;
+				// alert('Button click');
+				//isPublished = !isPublished;
+				let currentTime = Date.now();
+	        	console.log('Current Time:', currentTime);
+	        	localStorage.setItem('currentTime', currentTime.toString());
+				$.ajax({
+			        type: 'PUT',
+			        url: '/exams/' + examId2 + '/status',
+			        contentType: 'application/json',
+			        data: JSON.stringify({ status: isPublished }),
+			        success: function (response) {
+			            console.log(response);
+			           
+			            window.location.href = '/ongoingExam/' + examId2;
+			        },
+			        error: function (xhr, status, error) {
+			            console.error(xhr.responseText);
+			        }
+			    });
+				
+			}
+			document.getElementById('publish').onclick=publishExam;
+		});
+		
+		 document.getElementById('addQuestionBtn').addEventListener('click', function() {
+		    var questionForm = document.getElementById('questionForm');
+		    if (questionForm.style.display === 'none' || questionForm.style.display === '') {
+		        questionForm.style.display = 'block';
+		    } else {
+		        questionForm.reset(); 
+		        $('#saveButton').text('Save');
+		        localStorage.removeItem("questionId");
+		        
+		    }
+		});
+
+
+	    $(document).ready(function () { 
+		    $(document).on('click', '.questionLink', function(e) {
+		        e.preventDefault();
+		        var questionId = $(this).data('question-id');
+		        loadQuestionAndAnswers(questionId);
+		    });
+		
+		    $('#saveButton').click(function () {
+		        const examName = $('#inputExam').val();
+		        const examDateTime = $('#examDateTime').val();
+		        const examDuration = $('#examDuration').val();
+		
+		        const questionInput = document.getElementById('question_content').value;
+		        const answer1Input = document.getElementById('answer1').value;
+		        const answer2Input = document.getElementById('answer2').value;
+		        const answer3Input = document.getElementById('answer3').value;
+		        const answer4Input = document.getElementById('answer4').value;
+		        const correctAnswerInput = document.querySelector('input[name="correctAnswer"]:checked');
+		
+		        const hasQuestions = questionInput.trim() !== '' && answer1Input.trim() !== '' &&
+		                             answer2Input.trim() !== '' && answer3Input.trim() !== '' &&
+		                             answer4Input.trim() !== '' && correctAnswerInput;
+		
+		        let questionsData = [];
+		        if (hasQuestions) {
+		            const correctAnswerValue = correctAnswerInput.value;
+		            const oldQId = localStorage.getItem('questionId');
+		            const oldAns1 = localStorage.getItem('answer1');
+		            const oldAns2 = localStorage.getItem('answer2');
+		            const oldAns3 = localStorage.getItem('answer3');
+		            const oldAns4 = localStorage.getItem('answer4');
+		
+		            const answers = [
+		                { 
+		                    answerId: (oldAns1 === null) ? -1 : parseInt(oldAns1),
+		                    answer: answer1Input, 
+		                    key: "answer1", 
+		                    isCorrectAnswer: correctAnswerValue === 'answer1' 
+		                },
+		                { 
+		                    answerId: (oldAns2 === null) ? -1 : parseInt(oldAns2),
+		                    answer: answer2Input, 
+		                    key: "answer2", 
+		                    isCorrectAnswer: correctAnswerValue === 'answer2' 
+		                },
+		                { 
+		                    answerId: (oldAns3 === null) ? -1 : parseInt(oldAns3),
+		                    answer: answer3Input, 
+		                    key: "answer3", 
+		                    isCorrectAnswer: correctAnswerValue === 'answer3' 
+		                },
+		                { 
+		                    answerId: (oldAns4 === null) ? -1 : parseInt(oldAns4),
+		                    answer: answer4Input, 
+		                    key: "answer4", 
+		                    isCorrectAnswer: correctAnswerValue === 'answer4' 
+		                }
+		            ];
+		
+		            const questionData = {
+		                questionId: oldQId === null ? -1 : oldQId,
+		                question: questionInput,
+		                answers: answers
+		            };
+		
+		            questionsData.push(questionData);
+		        }
+		
+		        const examData = {
+		            examId: eId !== null && eId !== undefined ? eId : -1,
+		            examName: examName,
+		            examDateTime: examDateTime,
+		            examDuration: examDuration,
+		            lastUpdateTime: new Date().toISOString().slice(0, -2),
+		            questions: questionsData
+		        };
+		
+		        $.ajax({
+		            type: 'POST',
+		            url: '/saveExam',
+		            contentType: 'application/json',
+		            data: JSON.stringify(examData),
+		            success: function (response) {
+		                console.log(response);
+		                localStorage.removeItem("questionId");
+		                const newExamId = response.examId;
+		                localStorage.setItem('examIdRes', newExamId);
+		                getExamDetails(newExamId);
+		                RefreshTableToGetQues(newExamId);
+		                eId = newExamId; 
+		                console.log('ExamId for replace from save function', eId);
+		
+		                const questionDetails = response.questions;
+		                if (Array.isArray(questionDetails)) {
+		                    questionDetails.forEach(question => {
+		                        const questionLinkHtml = `<a href="#" class="questionLink" data-question-id="${question.questionId}">${question.question}</a><br>`;
+		                        $('#questable').append(questionLinkHtml);
+		                    });
+		                }
+		            },
+		            error: function (xhr, status, error) {
+		                console.error(xhr.responseText);
+		            }
+		        });
+		
+		        if (hasQuestions) {
+		            alert('Exam with questions and answers added successfully!');
+		        } else {
+		            alert('Exam added successfully without questions and answers!');
+		        }
+		
+		    });
+		
+		});
+
+	   
+    let examIdValue;
+    //exam details
+    function getExamDetails(examId) {
+	    return $.ajax({
+	        url: '/exam/' + examId,
+	        type: 'GET',
+	        dataType: 'json',
+	        success: function(response) {
+	            console.log('Exam Details:', response);
+	            $('#examDateTime').val(response.dateTime);
+	            $('#inputExam').val(response.examName);
+	            $('#examId').val(response.examId);
+	            localStorage.setItem('examId', response.examId);
+	            localStorage.setItem('examDateTime', response.dateTime);
+	            
+	            var questionsTable = $('#questable tbody');
+	            response.question.forEach(function(question) {
+	                var correctAnswer = '';
+	                question.answers.forEach(function(answer) {
+	                    if (answer.correctAnswer) {
+	                        correctAnswer = answer.answer;
+	                    }
+	                });
+	
+	                var newRow = '<tr id="question_' + question.questionId + '" data-questionId="' + question.questionId + '">' +
+	                    '<td><a href="#" id="questionLink' + question.questionId + '" class="questionLink" ' +
+	                    'data-question-id="' + question.questionId + '" onclick="handleQuestionLinkClick(event, ' +
+	                    question.questionId + ')">' + question.question + '</a></td>' +
+	                    '<td>' + correctAnswer + '</td>' +
+	                    '</tr>';
+	                questionsTable.append(newRow);
+	                
+	            });
+	        },
+	        error: function(xhr, status, error) {
+	        console.log('Error:', error);
+	        }
+	    });
+	}
+	
+	$(document).ready(function() {
+	    $.ajax({
+	        url: '/exam/' + examId2, 
+	        type: 'GET',
+	        dataType: 'json',
+	        success: function(response) {
+	            console.log('Exam Details:', response);
+	            localStorage.setItem('examId', response.examId);
+	            localStorage.setItem('examDateTime', response.dateTime);
+	            $('#examDateTime').val(response.dateTime);
+	            $('#inputExam').val(response.examName);
+	            $('#examId').val(response.examId);
+	            eId = response.examId;  
+            	console.log('ExamId for replace from getDetails', eId);
+	             examIdValue = response.examId;
+	        },
+	        error: function(xhr, status, error) {
+	            console.log('Error:', error);
+	        }
+	    });
+	});
+	
+	//question details
+	let questionIdValue;
+	function loadQuestionAndAnswers(questionId) {
+		$.ajax({
+	                url: '/getQuestionAndAnswersById/' + questionId,
+	                type: 'GET',
+	                dataType: 'json',
+	                success: function(response) {
+	                    console.log(response);
+	                    $('#quesId').val(response.questionId);
+	                    $('#question_content').val(response.question);
+	                    $('#answer1').val(response.answers[0].answer);
+	                    $('#answer2').val(response.answers[1].answer);
+	                    $('#answer3').val(response.answers[2].answer);
+	                    $('#answer4').val(response.answers[3].answer);
+	                    $('#correctAns').val(response.correctAnswer);
+	                    localStorage.setItem('questionId', response.questionId);
+	                    localStorage.setItem('answer1',response.answers[0].answerId);
+	                    localStorage.setItem('answer2',response.answers[1].answerId);
+	                    localStorage.setItem('answer3',response.answers[2].answerId);
+	                    localStorage.setItem('answer4',response.answers[3].answerId);
+	                    
+	                    response.answers.forEach(function(answer, index) {
+				        var radioValue = 'answer' + (index + 1);
+				        var radio = $('input[type="radio"][value="' + radioValue + '"]');
+				        
+				        if (answer.correctAnswer) {
+				            radio.prop('checked', true);
+				            radio.parent().addClass('correct-answer'); 
+				        } else {
+				            radio.parent().removeClass('correct-answer');
+				        }
+				        
+				    });
+				    $('#saveButton').text('Update');
+	                    
+	                },
+	                error: function(xhr, status, error) {
+	                    console.log('Error:', error);
+	                }
+	            });
+	}
+	$(document).ready(function() {
+        $('.questionLink').click(function(e) {
+            e.preventDefault(); 
+
+            var questionId = $(this).data('question-id');
+
+            loadQuestionAndAnswers(questionId);
+        });
+    });
+   
+   //refresh the question table
+	function RefreshTableToGetQues(examId) {
+	    console.log('Refreshing table for examId:', examId);
+	    $("#questable tbody").load(location.href + " #questable tbody > *", function() {
+	        console.log('Table refreshed.');
+	        
+	        $('.questionLink').click(function(e) {
+	            e.preventDefault(); 
+	
+	            var questionId = $(this).data('question-id');
+	            loadQuestionAndAnswers(questionId);
+	        });
+	    });
+	}
+
+	// fetch the duration
+	$.ajax({
+	    type: 'GET',
+	    url: '/ongoingExam/{examId}', 
+	    success: function(response) {
+	        console.log('Response from server:', response); 
+	
+	        let duration = response.duration;
+	        console.log('Duration fetched from response:', duration); 
+	
+	        localStorage.setItem('duration', duration);
+	        console.log('Duration stored in localStorage:', duration);
+	    },
+	    error: function(xhr, status, error) {
+	        console.error('Error fetching duration:', error);
+	    }
+	});
+	
+	//
+	document.addEventListener('DOMContentLoaded', function() {
+            const dateTimeInput = document.getElementById('examDateTime');
+
+            // Set minimum date to today
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            const minDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+            dateTimeInput.setAttribute('min', minDate);
+            
+            dateTimeInput.addEventListener('keydown', function(e) {
+                e.preventDefault();
+            });
+        });
+        
+  </script>
+  
+</body>
+</html>

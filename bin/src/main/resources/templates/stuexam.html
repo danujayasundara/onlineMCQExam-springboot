@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams</title>
+    <link rel="stylesheet" th:href="@{../css/stustyle.css}">
+</head>
+<body>
+    <header>
+        <div class="mainheader">
+            <img src="image/logo.png" alt="Logo">
+            <h1>Edueye</h1>
+        </div>
+    </header>
+
+    <div class="stumain">
+        <div class="studashboard">
+            
+            <ul>
+                <li><a th:href="@{/user-page}">Home</a></li>
+                <li><a th:href="@{/stuexam}">Exam</a></li>
+                <!--<li><a href="sturesult.html">Result</a></li>-->
+                <li><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="examrightcont">
+            <div class="searchtable">
+                <table>
+                    <tr>
+                    	<form id="searchForm">
+						    <th><input type="text" id="searchInput" name="examName"></th>
+						    <th id="search"><button id="searchButton" type="submit">Search</button></th>
+						</form>
+                    </tr>
+                </table>
+            </div>
+            <div class="examtable">
+                <table>
+	                <thead>
+	                    <tr>
+	                        <th id="exam"><a href="exampaper.html">Exam</a></th>
+	                        <th>Starting Time</th>
+	                        <th>Exam Duration</th>
+	                        <th>Status</th>
+	                    </tr>
+	                </thead>
+                    <tbody id="examBody">
+			            <tr th:each="exam : ${exams}" class="searchable" onclick="myFunction(this)" data-examid="${exam.exam_id}" data-userid="${loggedInUserId}"
+			            id="examList">
+			                <td><a th:href="@{'/' + ${exam.exam_id} + '/questions'(examId=${exam.exam_id}, userId=${loggedInUserId})}" 
+			                th:text="${exam.exam_name}" style="color: black;" id = "examLink" class="examLink"
+			                data-exam-id="${exam.exam_id}"></a></td>
+			                <td th:text="${exam.dateTime}"></td>
+			                <td th:text="${exam.duration}"></td>
+			                <td>
+				                <span th:each="attempt : ${examAttemptDtos}" th:if="${attempt.examId == exam.exam_id}">
+				                    <span th:text="${attempt.attended ? 'Attended' : 'Pending'}"></span>
+				                </span>
+				            </td>
+			            </tr>
+        			</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="mainfooter">
+            &copy; 2024 EduEye. All rights reserved.
+        </div>
+    </footer>
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    	document.getElementById('searchForm').addEventListener('submit', function(event) {
+			    event.preventDefault();
+			    const exam_name = document.getElementById('searchInput').value;
+			    searchExam(exam_name);
+			    
+			    function searchExam(exam_name) {
+		    	fetch(`/studentexam?exam_name=${encodeURIComponent(exam_name)}`)
+		        .then(response => response.json())
+		        .then(data => {
+		            
+		            console.log(data);
+		        })
+		        .catch(error => console.error('Error:', error));
+		}
+		});
+		
+		/*<![CDATA[*/
+	    function myFunction(row) {
+	        const examId = row.getAttribute('data-examid');
+	        const userId = row.getAttribute('data-userid');
+	        console.log('Clicked Exam ID:', examId);
+	        console.log('User ID:', userId);
+	        
+	        //let attemptStatus = $(row).find('td:last').text().trim().toLowerCase() === 'attended' ? 1 : 0; 
+	
+	        // window.location.href = '/exampaper?examId=' + examId + '&userId=' + userId;
+	    }
+	    /*]]>*/
+	    
+	    
+	    // develop search bar
+	    $(document).ready(function() {
+			 $('#searchForm').submit(function(e) {
+			    e.preventDefault();
+				var searchText = $('#searchInput').val().toLowerCase().trim(); 
+				var matchingExams = $('.searchable').filter(function() {
+			    var examName = $(this).find('td:first-child').text().toLowerCase(); 
+			    return examName.includes(searchText);
+			  });
+			if (matchingExams.length > 0) {
+			   matchingExams.addClass('highlight');
+			   } else {
+			      alert('No matching exam found.');
+			      $('.searchable').removeClass('highlight');
+			    }
+			});
+		});
+	    
+	    //end exam for students
+		document.addEventListener('DOMContentLoaded', function() {
+	    $.ajax({
+	        url: '/ended-exams',
+	        method: 'GET',
+	        success: function(response) {
+	            console.log('Ended Exam IDs:', response);
+	            disableEndedExamLinks(response);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('Error fetching ended exam IDs:', error);
+	        }
+	    });
+	
+	    function disableEndedExamLinks(endedExams) {
+	        var examLinks = document.querySelectorAll('.examLink');
+	
+	        examLinks.forEach(function(link) {
+	            var href = link.getAttribute('href');
+	            if (href) {
+	                var examId = href.split('/')[1];
+	                if (examId && endedExams.some(function(exam) { return exam.examId === parseInt(examId) && exam.ended; })) {
+	                    disableExamLink(link);
+	                }
+	            }
+	        });
+	    }
+	
+	    function disableExamLink(link) {
+	        link.classList.add('disabled');
+	        link.setAttribute('disabled', true);
+	        link.style.color = 'gray';
+	        link.style.pointerEvents = 'none';
+	        link.setAttribute('title', 'This exam is no longer available');
+	        link.addEventListener('click', function(event) {
+	            event.preventDefault();
+	            alert('This exam is no longer available.');
+	        });
+	    }
+	});
+	
+	// attend status
+	function updateAttemptStatuses() {
+	    fetch('/exam-statuses')
+	        .then(response => response.json())
+	        .then(data => {
+	            console.log('Fetched Attempt Statuses:', data); 
+	            data.forEach(status => {
+	                const examId = status.examId;
+	                const statusDisplay = document.getElementById(`statusDisplay_${examId}`);
+	                if (statusDisplay) {
+	                    statusDisplay.textContent = status.attended ? 'Attended' : 'Pending';
+	                }
+	            });
+	        })
+	        .catch(error => {
+	            console.error('Error fetching attempt statuses:', error);
+	        });
+	}
+	
+	updateAttemptStatuses(); 
+
+    </script>
+</body>
+</html>
