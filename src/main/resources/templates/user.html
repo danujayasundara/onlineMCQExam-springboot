@@ -47,23 +47,18 @@
         </div>
     </footer>
     <script>
-	    // Check if userId is already set in sessionStorage
 	    var userId = sessionStorage.getItem('userId');
 	    console.log('User Id in local', userId);
 	
 	    if (!userId) {
-	        // If userId is not set, fetch it from the server-side (assuming it's available in the model)
-	        userId = "[[${userId}]]"; // Ensure this matches the attribute name in your model
+	        userId = "[[${userId}]]"; 
 	        
-	        // Store the userId in sessionStorage
 	        sessionStorage.setItem('userId', userId);
 	        console.log('User Id in session', userId);
 	    }
 	
-	    // Function to logout and clear userId from sessionStorage
 	    function logout() {
 	        sessionStorage.removeItem('userId');
-	        // Redirect to logout URL or perform any other logout actions
 	        window.location.href = "/logout";
 	    }
 </script>

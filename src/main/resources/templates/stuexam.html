@@ -7,12 +7,11 @@
     <link rel="stylesheet" th:href="@{../css/stustyle.css}">
     <style>
     	a.endedExam {
-	    color: #999999; /* Change color to a lighter shade of gray */
-	    text-decoration: none; /* Remove underline */
-	    cursor: not-allowed; /* Change cursor to indicate it's not clickable */
-	    pointer-events: none; /* Disable pointer events */
-	    opacity: 0.5; /* Reduce opacity to visually indicate it's disabled */
-	    /* Optionally, you can add a background color or any other styles to further indicate it's disabled */
+	    color: #999999; 
+	    text-decoration: none; 
+	    cursor: not-allowed; 
+	    pointer-events: none; 
+	    opacity: 0.5;
 	}
     </style>
 </head>
@@ -166,7 +165,6 @@
                     console.log('Exam Data:', examData);
                     console.log('Ended Exams:', endedExams);
                     
-                    // Ensure endedExams is defined and an array
                     if (endedExams && Array.isArray(endedExams)) {
                         updateExamTable(examData.exams, examData.examAttemptDtos, endedExams);
                     } else {
@@ -179,7 +177,6 @@
         };
 
         function updateExamTable(exams, examAttemptDtos, endedExams) {
-            // Function to update the exam table with the received data
             var examBody = document.getElementById('examBody');
             examBody.innerHTML = '';
             exams.forEach(exam => {
@@ -194,13 +191,11 @@
                 examLink.className = 'examLink';
                 examLink.setAttribute('data-exam-id', exam.exam_id);
                 
-                // Check if the exam ID is in the endedExams array
                 var isEnded = endedExams.some(endedExam => endedExam.examId === exam.exam_id);
                 if (isEnded) {
-                    examLink.classList.add('endedExam'); // Add a class for styling
-                    examLink.removeAttribute('href'); // Remove the href attribute to disable the link
+                    examLink.classList.add('endedExam'); 
+                    examLink.removeAttribute('href'); 
                 } else {
-                    // If the exam is not ended, set the link href
                     examLink.href = '/' + exam.exam_id + '/questions?examId=' + exam.exam_id + '&userId=' + sessionStorage.getItem('userId');
                 }
 

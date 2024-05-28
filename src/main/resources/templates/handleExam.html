@@ -121,15 +121,21 @@
 	    localStorage.setItem('duration', duration);
 	    console.log('Duration stored in localStorage:', duration);
 	   
-	    let currentTime = new Date();
-	    let endTime = new Date(currentTime.getTime() + duration * 60000);
-	    console.log('End Time stored in localStorage:', endTime);
-	    localStorage.setItem('endTime', endTime);
+	    let storedTime = localStorage.getItem('currentTime');
+	    if (storedTime && !isNaN(parseInt(storedTime))) {
+	        let startTime = new Date(parseInt(storedTime));
+	        let endTime = new Date(startTime.getTime() + duration * 60000);
 	
-	    let formattedEndTime = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
-	    console.log('Formatted End Time:', formattedEndTime);
+	        console.log('End Time stored in localStorage:', endTime);
+	        localStorage.setItem('endTime', endTime);
 	
-	    document.getElementById('endTime').textContent = formattedEndTime;
+	        let formattedEndTime = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
+	        console.log('Formatted End Time:', formattedEndTime);
+	
+	        document.getElementById('endTime').textContent = formattedEndTime;
+	    } else {
+	        console.error('Invalid or missing stored start time.');
+	    }
 	});
 	
 	//end exam
@@ -187,6 +193,7 @@
 	        }
 	    }, 1000);
 	});
+	
 	
 	//attempting students
 	document.addEventListener('DOMContentLoaded', function() {

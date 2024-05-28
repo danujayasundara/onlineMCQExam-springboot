@@ -73,7 +73,7 @@
                 <table>
                     <tr>
                         <th><input type="hidden" id="questionId" th:value="${currentQuestion.question_id}" />
-							<button onclick="saveSelectedAnswer()">Save</button></th>
+							<button onclick="redirectToStuExamPage()">Save</button></th>
                         <th><button onclick="displaySavedAnswers()">Complete</button></th>
                     </tr>
                 </table>
@@ -109,6 +109,10 @@
 	    sessionStorage.setItem(`selectedAnswer_${questionId}`, JSON.stringify(data));
 	    console.log(`Answer for question ${questionId} saved:`, data);
 	}
+	
+	function redirectToStuExamPage() {
+            window.location.href = '/stuexam';
+        }
 
 
     window.addEventListener('load', function() {

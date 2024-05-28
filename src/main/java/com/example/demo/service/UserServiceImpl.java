@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
             return user.getId();
         }
-        return null; // Handle the case where user is not found
+        return null; 
     }
 
 	/*public List<User> getStudentsById(Exam examId) {

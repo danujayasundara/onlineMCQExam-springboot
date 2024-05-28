@@ -53,19 +53,15 @@ public class UserController {
 	}
 	
 	
-	
 	@GetMapping("user-page")
 	public String userPage (Model model, Principal principal) {
 		String userEmail = principal.getName();
-
-	    // Retrieve userId using UserService
 	    Long userId = userServiceImpl.getUserIdByEmail(userEmail);
 
 	    if (userId != null) {
-	        model.addAttribute("userId", userId); // Add userId to the model
+	        model.addAttribute("userId", userId);
 	    } else {
-	        // Handle the case where userId is not found for the user
-	        // You can redirect to an error page or handle it as per your application's logic
+	       
 	    }
 	    
 		return "user";

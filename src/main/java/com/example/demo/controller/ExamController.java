@@ -175,7 +175,7 @@ public class ExamController {
 	  
 	  @GetMapping("/stuexam")
 	  public String showExamPage() {
-	      return "stuexam"; // This should match the name of your HTML template, if you're using a template engine
+	      return "stuexam"; 
 	  }
 	  
 	  // get data
@@ -185,18 +185,14 @@ public class ExamController {
 	      Long userId = requestBody.get("userId");
 	      Map<String, Object> response = new HashMap<>();
 
-	      // Step 1: Retrieve all active exams
 	      List<Exam> activeExams = examServiceImpl.getAllActiveExams();
 	      response.put("exams", activeExams);
 
-	      // Step 2: Retrieve the user details using the provided userId
 	      User user = userServiceImpl.getUserById(userId);
 	      System.out.println("*****#########@@@@@@@@@@Logged In User ID: " + userId);
 
-	      // Step 3: Retrieve all exam attempts by the user
 	      List<ExamAttempt> userAttempts = examAttemptRepository.findByUser(user);
 
-	      // Step 4: Populate the examAttemptDtos list with the correct attempt status for each exam
 	      List<ExamAttendedDto> examAttendedDtos = new ArrayList<>();
 	      Map<Long, Boolean> attemptStatusMap = new HashMap<>();
 	      for (ExamAttempt attempt : userAttempts) {
@@ -205,12 +201,11 @@ public class ExamController {
 
 	      for (Exam exam : activeExams) {
 	          Long examId = exam.getExam_id();
-	          boolean attended = attemptStatusMap.getOrDefault(examId, false); // Default to false if not found
+	          boolean attended = attemptStatusMap.getOrDefault(examId, false); 
 	          ExamAttendedDto dto = new ExamAttendedDto(examId, attended);
 	          examAttendedDtos.add(dto);
 	      }
 
-	      // Step 5: Add the examAttemptDtos list to the response
 	      response.put("examAttemptDtos", examAttendedDtos);
 
 	      return response;
@@ -233,58 +228,58 @@ public class ExamController {
 		 
 	 //save exam attempt details
 	  @PostMapping("/saveAttemptData")
-	  public ResponseEntity<String> saveData(@RequestBody String data) {
-		    ObjectMapper mapper = new ObjectMapper();
-		    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		    ExamAttemptDto examAtt;
+	    public ResponseEntity<String> saveData(@RequestBody String data) throws JsonMappingException {
+	        ObjectMapper mapper = new ObjectMapper();
+	        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	        ExamAttemptDto examAtt;
 
-		    try {
-		        examAtt = mapper.readValue(data, ExamAttemptDto.class);
-		        System.out.println("Exam Att details");
-		        System.out.println("ExamId: " + examAtt.getExamId());
-		        System.out.println("UserId: " + examAtt.getUserId());
+	        try {
+	            examAtt = mapper.readValue(data, ExamAttemptDto.class);
 
-		        ExamAttempt examAttempt = new ExamAttempt();
-		        examAttempt.setExam(examAtt.getExamId());
-		        User user = userRepository.findById(examAtt.getUserId().getId())
-		                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-		        examAttempt.setUser(user);
-		        examAttemptRepository.save(examAttempt);
-
-		        // Return a success response
-		        return ResponseEntity.ok("Exam attempt data saved successfully.");
-		    } catch (JsonMappingException e) {
-		        e.printStackTrace();
-		        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error mapping JSON.");
-		    } catch (JsonProcessingException e) {
-		        e.printStackTrace();
-		        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error processing JSON.");
-		    }
-		}
+	            ExamAttempt existingAttempt = examAttemptRepository.findByUserAndExam(examAtt.getUserId(), examAtt.getExamId());
+	            if (existingAttempt != null) {
+	                existingAttempt.setAttempt_status(examAtt.isAttemptStatus());
+	                examAttemptRepository.save(existingAttempt);
+	                return ResponseEntity.ok("Exam attempt data updated successfully.");
+	            } else {
+	                ExamAttempt examAttempt = new ExamAttempt();
+	                examAttempt.setExam(examAtt.getExamId());
+	                User user = userRepository.findById(examAtt.getUserId().getId())
+	                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+	                examAttempt.setUser(user);
+	                examAttempt.setAttempt_status(examAtt.isAttemptStatus());
+	                examAttemptRepository.save(examAttempt);
+	                return ResponseEntity.ok("New exam attempt data saved successfully.");
+	            }
+	        } catch (JsonProcessingException e) {
+	            e.printStackTrace();
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error mapping/processing JSON.");
+	        }
+	    }
 
 	  
 	  //update attempt status
 	  @PostMapping("/completeAttempt")
-	  public String saveAttemptStatus(@RequestBody String data) {
-		  ObjectMapper mapper = new ObjectMapper();
-		  mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		  ExamAttemptDto examAtt;
-			try {
-				examAtt = mapper.readValue(data, ExamAttemptDto.class);
-				User user = userRepository.findById(examAtt.getUserId().getId())
-                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
-				examServiceImpl.saveAttemptStatus(user, examAtt.getExamId());
-				
-			} catch (JsonMappingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		  return "sturesult";
-	  }
+	    public String saveAttemptStatus(@RequestBody String data) {
+	        ObjectMapper mapper = new ObjectMapper();
+	        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	        ExamAttemptDto examAtt;
+	        try {
+	            examAtt = mapper.readValue(data, ExamAttemptDto.class);
+	            User user = userRepository.findById(examAtt.getUserId().getId())
+	                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+	            ExamAttempt existingAttempt = examAttemptRepository.findByUserAndExam(user, examAtt.getExamId());
+	            if (existingAttempt != null) {
+	                existingAttempt.setAttempt_status(true); 
+	                examAttemptRepository.save(existingAttempt);
+	            }
+	        } catch (JsonMappingException e) {
+	            e.printStackTrace();
+	        } catch (JsonProcessingException e) {
+	            e.printStackTrace();
+	        }
+	        return "sturesult";
+	    }
 	  
 	  @GetMapping("/ongoingExam/{examId}")
 	  public String displayAndHandleExam(@PathVariable Long examId, Model model) {
@@ -310,17 +305,19 @@ public class ExamController {
 	  }
 	  
 	  @PutMapping("/exams/{examId}/status")
-	  public String updateExamStatus(@PathVariable Long examId, @RequestBody Map<String, Boolean> requestBody) {
-		  Boolean status = requestBody.get("status");
+	  public ResponseEntity<String> updateExamStatus(@PathVariable Long examId, @RequestBody Map<String, Boolean> requestBody) {
+		    Boolean status = requestBody.get("status");
 		    if (status != null) {
 		        boolean updateSuccessful = examServiceImpl.updateExamStatus(examId, status);
-		        
+		        if (updateSuccessful) {
+		            return ResponseEntity.ok("Exam status updated successfully");
+		        } else {
+		            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update exam status");
+		        }
 		    } else {
-		        return "Status parameter missing or invalid";
+		        return ResponseEntity.badRequest().body("Status parameter missing or invalid");
 		    }
-		  
-		  return "handleExam";
-	  }
+		}
 	  
 	  //send exam details
 	  @GetMapping("/exam/{examId}")
